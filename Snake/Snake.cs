@@ -1,43 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Snake
 {
     class Snake : FigureLine
     {
-        Direction d;
-        private Point head;
+        public Direction D { get; set; }
 
         public Snake(int xhead, int yhead, char symbol, int lenght, Direction d) : base(xhead, yhead, symbol, lenght)
         {
-            Head = new Point(xhead, yhead, symbol);
             D = d;
             switch (D)
             {
                 case Direction.UP:
-                    for (int i = 0; i <= lenght; i++)
+                    for (int i = 0; i < lenght; i++)
                     {
                         Plist.Add(new Point(xhead, yhead++, symbol));
                     }
                     break;
                 case Direction.LEFT:
-                    for (int i = 0; i <= lenght; i++)
+                    for (int i = 0; i < lenght; i++)
                     {
                         Plist.Add(new Point(xhead++, yhead, symbol));
                     }
                     break;
                 case Direction.RIGHT:
-                    for (int i = 0; i <= lenght; i++)
+                    for (int i = 0; i < lenght; i++)
                     {
                         Plist.Add(new Point(xhead--, yhead, symbol));
                     }
                     break;
                 case Direction.DOWN:
-                    for (int i = 0; i <= lenght; i++)
+                    for (int i = 0; i < lenght; i++)
                     {
                         Plist.Add(new Point(xhead, yhead--, symbol));
                     }
@@ -45,8 +39,6 @@ namespace Snake
             }
         }
 
-        public Point Head { get => head; set => head = value; }
-        internal Direction D { get => d; set => d = value; }
         public void Move()
         {
             Point last = Plist.Last();
@@ -83,7 +75,7 @@ namespace Snake
             switch (keyInfo.Key)
             {
                 case ConsoleKey.LeftArrow:
-                    if(D != Direction.LEFT && D != Direction.RIGHT)
+                    if (D != Direction.LEFT && D != Direction.RIGHT)
                     {
                         D = Direction.LEFT;
                     }
@@ -108,6 +100,66 @@ namespace Snake
                     break;
             }
 
+        }
+        public void Eat(Point p)
+        {
+            Plist.Insert(0, new Point(p.X, p.Y, 'o'));
+            Plist.First().Draw();
+            Lenght++;
+            Console.Title = $"Счет: {Lenght}";
+
+        }
+        public bool NextStepWithFood(Point p)
+        {
+            switch (D)
+            {
+                case Direction.UP:
+                    if (Plist.First().X == p.X && Plist.First().Y - 1 == p.Y)
+                    {
+                        return true;
+                    }
+                    break;
+                case Direction.LEFT:
+                    if (Plist.First().X - 1 == p.X && Plist.First().Y == p.Y)
+                    {
+                        return true;
+                    }
+                    break;
+                case Direction.RIGHT:
+                    if (Plist.First().X + 1 == p.X && Plist.First().Y == p.Y)
+                    {
+                        return true;
+                    }
+                    break;
+                case Direction.DOWN:
+                    if (Plist.First().X == p.X && Plist.First().Y + 1 == p.Y)
+                    {
+                        return true;
+                    }
+                    break;
+            }
+            return false;
+        }
+        public bool CrashedIntoItself()
+        {
+            Point head = Plist.First();
+            for(int i = 1; i < Lenght; i++)
+            {
+                if(Plist[i].X == head.X && Plist[i].Y == head.Y)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool CrashedIntoTheWall(Walls w)
+        {
+            Point head = Plist.First();
+            if(head.X == 0 || head.X == w.Width || head.Y == w.Heigh || head.Y == 0)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

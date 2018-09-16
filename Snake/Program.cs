@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Snake
 {
@@ -11,28 +7,32 @@ namespace Snake
     {
         static void Main(string[] args)
         {
-
-            HorizontalLine hline1 = new HorizontalLine(0, 0, '/', 100);
-            HorizontalLine hline2 = new HorizontalLine(0, 26, '/', 100);
-            VerticalLine vline1 = new VerticalLine(0, 1, '/', 24);
-            VerticalLine vline2 = new VerticalLine(100, 1, '/', 24);
-            hline1.Draw();
-            hline2.Draw();
-            vline1.Draw();
-            vline2.Draw();
-
-            Snake snake = new Snake(6, 1, 'o', 5, Direction.RIGHT);
+            Console.Title = "Счет: 0";
+            Console.SetWindowSize(101, 27);
+            Walls w = new Walls(100, 26);
+            Snake snake = new Snake(10, 10, 'o', 7, Direction.RIGHT);
             snake.Draw();
             snake.Move();
 
+            FoodCreator fc = new FoodCreator();
             while (true)
             {
+                if (snake.CrashedIntoItself() || snake.CrashedIntoTheWall(w))
+                {
+                    break;
+                }
                 if (Console.KeyAvailable)
                 {
                     ConsoleKeyInfo keyInfo = Console.ReadKey();
                     snake.ChangeDirection(keyInfo);
                 }
-                Thread.Sleep(200);
+                if (snake.NextStepWithFood(fc.F))
+                {
+                    snake.Eat(fc.F);
+                    fc = new FoodCreator();
+                }
+
+                Thread.Sleep(100);
                 snake.Move();
             }
         }
