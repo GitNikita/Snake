@@ -14,7 +14,7 @@ namespace Snake
             snake.Draw();
             snake.Move();
 
-            FoodCreator fc = new FoodCreator();
+            var fc = new FoodCreator();
             while (true)
             {
                 if (snake.CrashedIntoItself() || snake.CrashedIntoTheWall(w))
